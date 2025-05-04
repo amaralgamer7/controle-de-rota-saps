@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exportar Dados</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- jsPDF para exportar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- SheetJS (xlsx) para exportar Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="mb-4">Exportar Dados</h2>
+
+    <div class="d-grid gap-3 col-md-6 mx-auto">
+      <button class="btn btn-primary" onclick="exportarPDF()">Exportar Tudo em PDF</button>
+      <button class="btn btn-success" onclick="exportarExcel()">Exportar Tudo em Excel</button>
+    </div>
+  </div>
+
+  <script>
+    async function buscarDados() {
+      const urls = [
+        { nome: "motoristas", url: "http://localhost:3000/motoristas" },
+        { nome: "abastecimentos", url: "http://localhost:3000/abastecimentos" },
+        { nome: "rotas", url: "http://localhost:3000/rotas" },
+      ];
+
+      const dados = {};
+      for (const item of urls) {
+        const resp = await fetch(item.url);
+        dados[item.nome] = await resp.json();
+      }
+      return dados;
+    }
+
+    async function exportarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const dados = await buscarDados();
+
+      let y = 10;
+      for (const tipo in dados) {
+        doc.setFontSize(14);
+        doc.text(tipo.toUpperCase(), 10, y);
+        y += 6;
+
+        dados[tipo].forEach((item, i) => {
+          doc.setFontSize(10);
+          doc.text(`${i + 1}. ${JSON.stringify(item)}`, 10, y);
+          y += 6;
+          if (y > 280) {
+            doc.addPage();
+            y = 10;
+          }
+        });
+        y += 10;
+      }
+
+      doc.save("dados_exportados.pdf");
+    }
+
+    async function exportarExcel() {
+      const dados = await buscarDados();
+      const wb = XLSX.utils.book_new();
+
+      for (const tipo in dados) {
+        const ws = XLSX.utils.json_to_sheet(dados[tipo]);
+        XLSX.utils.book_append_sheet(wb, ws, tipo);
+      }
+
+      XLSX.writeFile(wb, "dados_exportados.xlsx");
+    }
+  </script>
+</body>
+</html>

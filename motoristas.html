@@ -1,0 +1,66 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Motorista</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h1 class="mb-4">Cadastrar Motorista</h1>
+
+    <form id="formMotorista" onsubmit="cadastrarMotorista(event)">
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" required>
+      </div>
+      <div class="mb-3">
+        <label for="cpf" class="form-label">CPF</label>
+        <input type="text" class="form-control" id="cpf" required>
+      </div>
+      <div class="mb-3">
+        <label for="cnh" class="form-label">CNH</label>
+        <input type="text" class="form-control" id="cnh" required>
+      </div>
+      <div class="mb-3">
+        <label for="telefone" class="form-label">Telefone</label>
+        <input type="text" class="form-control" id="telefone" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+  </div>
+
+  <script>
+    async function cadastrarMotorista(event) {
+      event.preventDefault();
+
+      const motorista = {
+        nome: document.getElementById('nome').value,
+        cpf: document.getElementById('cpf').value,
+        cnh: document.getElementById('cnh').value,
+        telefone: document.getElementById('telefone').value,
+      };
+
+      try {
+        const res = await fetch('http://localhost:3000/motoristas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(motorista),
+        });
+
+        if (res.ok) {
+          alert('Motorista cadastrado com sucesso!');
+          document.getElementById('formMotorista').reset();
+        } else {
+          alert('Erro ao cadastrar motorista.');
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao cadastrar motorista.');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Listar Motoristas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>Lista de Motoristas</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CNH</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="motoristas-body">
+        <!-- Conteúdo gerado dinamicamente -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    fetch("http://localhost:3000/motoristas")
+      .then(res => res.json())
+      .then(motoristas => {
+        const tbody = document.getElementById("motoristas-body");
+        motoristas.forEach(motorista => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${motorista.nome}</td>
+            <td>${motorista.cnh}</td>
+            <td><button class="btn btn-sm btn-warning">Editar</button></td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error("Erro ao carregar motoristas:", err);
+      });
+  </script>
+  
+</body>
+</html>
