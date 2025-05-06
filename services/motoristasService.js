@@ -1,29 +1,41 @@
-import { readJson, writeJson } from '../utils/fileUtils.js';
-const filePath = './data/motoristas.json';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// export async function listarMotoristas() {
-//   return await readJson(filePath);
-// }
-
-// export async function adicionarMotorista(motorista) {
-//   const motoristas = await readJson(filePath);
-//   motorista.id = Date.now();
-//   motoristas.push(motorista);
-//   await writeJson(filePath, motoristas);
-//   return motorista;
-// }
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const motoristasPath = path.join(__dirname, '../data/motoristas.json');
-
-export async function adicionarMotorista(motorista) {
-  const lista = await readJson(motoristasPath);
-  lista.push(motorista);
-  await writeJson(motoristasPath, lista);
-}
+import fs from 'fs/promises';
+const caminhoMotoristas = './data/motoristas.json';
 
 export async function listarMotoristas() {
-  return readJson(motoristasPath);
+  const dados = await fs.readFile(caminhoMotoristas, 'utf-8');
+  return JSON.parse(dados);
+}
+
+export async function adicionarMotorista(novoMotorista) {
+  const motoristas = await listarMotoristas();
+
+  const motoristaComId = {
+    id: Date.now(), // Gera um ID numérico único
+    ...novoMotorista
+  };
+
+  motoristas.push(motoristaComId);
+  await fs.writeFile(caminhoMotoristas, JSON.stringify(motoristas, null, 2));
+}
+
+export async function obterMotoristaPorId(id) {
+  const motoristas = await listarMotoristas();
+  return motoristas.find(m => m.id === id);
+}
+
+export async function atualizarMotorista(id, dadosAtualizados) {
+  const motoristas = await listarMotoristas();
+  const index = motoristas.findIndex(m => m.id === id);
+  if (index === -1) throw new Error('Motorista não encontrado');
+
+  motoristas[index] = { id, ...dadosAtualizados };
+  await fs.writeFile(caminhoMotoristas, JSON.stringify(motoristas, null, 2));
+}
+
+export async function excluirMotorista(id) {
+  const motoristas = await listarMotoristas();
+  const atualizados = motoristas.filter(m => m.id !== id);
+  if (motoristas.length === atualizados.length) throw new Error('Motorista não encontrado');
+
+  await fs.writeFile(caminhoMotoristas, JSON.stringify(atualizados, null, 2));
 }

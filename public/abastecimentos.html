@@ -1,0 +1,106 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Abastecimento</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h1 class="mb-4">Cadastrar Abastecimento</h1>
+
+    <form id="formAbastecimento" onsubmit="cadastrarAbastecimento(event)">
+      <div class="mb-3">
+        <label for="data" class="form-label">Data</label>
+        <input type="date" class="form-control" id="data" required>
+      </div>
+      <div class="mb-3">
+        <label for="placa" class="form-label">Placa</label>
+        <input type="text" class="form-control" id="placa" required>
+      </div>
+      <div class="mb-3">
+        <label for="valor" class="form-label">Valor (R$)</label>
+        <input type="number" class="form-control" id="valor" required>
+      </div>
+      <div class="mb-3">
+        <label for="litros" class="form-label">Litros</label>
+        <input type="number" class="form-control" id="litros" required>
+      </div>
+      <div class="mb-3">
+        <label for="km" class="form-label">Quilometragem (KM)</label>
+        <input type="number" class="form-control" id="km" required>
+      </div>
+      <div class="mb-3">
+        <label for="motorista" class="form-label">Motorista</label>
+        <select id="motorista" name="motorista" class="form-select" required>
+          <option value="">Selecione um motorista</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="sistema-rotas.html" class="btn btn-primary">Voltar ao Menu Principal</a>
+  </div>
+  
+
+  <script>
+    async function cadastrarAbastecimento(event) {
+  event.preventDefault();
+
+  const abastecimento = {
+    data: document.getElementById('data').value,
+    placa: document.getElementById('placa').value,
+    valor: document.getElementById('valor').value,
+    litros: document.getElementById('litros').value,
+    km: document.getElementById('km').value,
+    motorista: document.getElementById('motorista').value,  // Adicionando o motorista
+  };
+
+  try {
+    const res = await fetch('http://localhost:3000/abastecimentos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(abastecimento),
+    });
+
+    if (res.ok) {
+      alert('Abastecimento cadastrado com sucesso!');
+      document.getElementById('formAbastecimento').reset();
+    } else {
+      alert('Erro ao cadastrar abastecimento.');
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao cadastrar abastecimento.');
+  }
+}
+
+    if (!localStorage.getItem('token')) {
+    window.location.href = './public/login.html';
+  }
+  </script>
+
+<script>
+  async function carregarMotoristas() {
+    const resposta = await fetch("http://localhost:3000/motoristas");
+    const motoristas = await resposta.json();
+
+    const select = document.getElementById("motorista");
+
+    motoristas.forEach(m => {
+      const option = document.createElement("option");
+      option.value = m.nome; // ou m.id se estiver usando ID
+      option.textContent = m.nome;
+      select.appendChild(option);
+    });
+  }
+
+  carregarMotoristas();
+</script>
+
+</body>
+</html>

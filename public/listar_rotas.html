@@ -11,12 +11,15 @@
     <table class="table table-striped">
       <thead>
         <tr>
+          <th>Data</th>
           <th>Origem</th>
           <th>Destino</th>
+          <th>Distância (km)</th>
           <th>Motorista</th>
           <th>Placa</th>
         </tr>
       </thead>
+      
       <tbody id="rotas-body">
         <!-- Conteúdo gerado dinamicamente -->
       </tbody>
@@ -35,10 +38,12 @@
         rotas.forEach(rota => {
           const row = document.createElement("tr");
           row.innerHTML = `
+            <td>${new Date(rota.data).toLocaleDateString('pt-BR')}</td>
             <td>${rota.origem}</td>
             <td>${rota.destino}</td>
+            <td>${rota.distancia} km</td>
             <td>${rota.motorista?.nome ?? 'Indefinido'}</td>
-            <td>${rota.veiculo?.placa ?? 'Indefinido'}</td>
+            <td>${rota.placa ?? 'Indefinido'}</td>
           `;
           tbody.appendChild(row);
         });
@@ -46,6 +51,10 @@
       .catch(err => {
         console.error("Erro ao carregar rotas:", err);
       });
+
+      if (!localStorage.getItem('token')) {
+    window.location.href = 'login.html';
+  }
   </script>
   
 </body>

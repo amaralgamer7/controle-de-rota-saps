@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Motorista</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h1 class="mb-4">Editar Motorista</h1>
+
+    <form id="formEditarMotorista">
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" required>
+      </div>
+      <div class="mb-3">
+        <label for="cnh" class="form-label">CNH</label>
+        <input type="text" class="form-control" id="cnh" required>
+      </div>
+      <button type="submit" class="btn btn-success">Salvar Alterações</button>
+    </form>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="listar_motoristas.html" class="btn btn-secondary">Voltar</a>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    // Buscar dados do motorista
+    fetch(`http://localhost:3000/motoristas/${id}`)
+      .then(res => res.json())
+      .then(motorista => {
+        document.getElementById("nome").value = motorista.nome;
+        document.getElementById("cnh").value = motorista.cnh;
+      })
+      .catch(err => {
+        console.error("Erro ao buscar motorista:", err);
+        alert("Erro ao carregar motorista.");
+      });
+
+    // Enviar atualização
+    document.getElementById("formEditarMotorista").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const dadosAtualizados = {
+        nome: document.getElementById("nome").value,
+        cnh: document.getElementById("cnh").value
+      };
+
+      try {
+        const res = await fetch(`http://localhost:3000/motoristas/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(dadosAtualizados)
+        });
+
+        if (res.ok) {
+          alert("Motorista atualizado com sucesso!");
+          window.location.href = "listar-motoristas.html";
+        } else {
+          alert("Erro ao atualizar motorista.");
+        }
+      } catch (err) {
+        console.error("Erro ao atualizar motorista:", err);
+        alert("Erro ao atualizar motorista.");
+      }
+    });
+
+    if (!localStorage.getItem('token')) {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

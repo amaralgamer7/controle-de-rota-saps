@@ -42,36 +42,42 @@
   <script>
     async function cadastrarVeiculo(event) {
       event.preventDefault();
-
+  
       const veiculo = {
-        veiculo: document.getElementById('veiculo').value,
         placa: document.getElementById('placa').value,
         modelo: document.getElementById('modelo').value,
         marca: document.getElementById('marca').value,
-        ano: document.getElementById('ano').value,
-        capacidade: document.getElementById('capacidade').value,
+        ano: parseInt(document.getElementById('ano').value),
+        capacidade: parseFloat(document.getElementById('capacidade').value)
       };
-
+  
       try {
         const res = await fetch('http://localhost:3000/veiculos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') // se estiver protegida
           },
-          body: JSON.stringify(veiculo),
+          body: JSON.stringify(veiculo)
         });
-
+  
         if (res.ok) {
           alert('Veículo cadastrado com sucesso!');
           document.getElementById('formVeiculo').reset();
         } else {
-          alert('Erro ao cadastrar veículo.');
+          const err = await res.json();
+          alert('Erro ao cadastrar veículo: ' + (err.message || res.statusText));
         }
       } catch (error) {
         console.error('Erro:', error);
         alert('Erro ao cadastrar veículo.');
       }
     }
+  
+    if (!localStorage.getItem('token')) {
+      window.location.href = 'login.html';
+    }
   </script>
+  
 </body>
 </html>

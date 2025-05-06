@@ -1,20 +1,27 @@
-import { readJson, writeJson } from '../utils/fileUtils.js';
-const filePath = './data/rotas.json';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const rotasPath = path.join(__dirname, '../data/rotas.json');
-
-export async function adicionarRota(rota) {
-  const lista = await readJson(rotasPath);
-  lista.push(rota);
-  await writeJson(rotasPath, lista);
-}
+import fs from 'fs/promises';
+const caminhoRotas = './data/rotas.json';
+const caminhoMotoristas = './data/motoristas.json';
+const caminhoVeiculos = './data/veiculos.json';
 
 export async function listarRotas() {
-  return readJson(rotasPath);
+  const dados = await fs.readFile(caminhoRotas, 'utf-8');
+  return JSON.parse(dados);
+}
+
+export async function adicionarRota(rota) {
+  const motoristas = JSON.parse(await fs.readFile(caminhoMotoristas, 'utf-8'));
+  const veiculos = JSON.parse(await fs.readFile(caminhoVeiculos, 'utf-8'));
+  const rotas = await listarRotas();
+
+  const motorista = motoristas.find(m => m.id === rota.motoristaId);
+  const veiculo = veiculos.find(v => v.placa === rota.placa);
+
+  const novaRota = {
+    ...rota,
+    motorista: motorista || null,
+    veiculo: veiculo || null,
+  };
+
+  rotas.push(novaRota);
+  await fs.writeFile(caminhoRotas, JSON.stringify(rotas, null, 2));
 }

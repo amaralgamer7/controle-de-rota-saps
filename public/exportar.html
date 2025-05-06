@@ -79,6 +79,10 @@
 
       XLSX.writeFile(wb, "dados_exportados.xlsx");
     }
+
+    if (!localStorage.getItem('token')) {
+    window.location.href = 'login.html';
+  }
   </script>
 </body>
 </html>

@@ -13,8 +13,11 @@
         <tr>
           <th>Data</th>
           <th>Placa</th>
+          <th>Modelo</th>
+          <th>Valor (R$)</th>
           <th>Litros</th>
           <th>KM</th>
+          <th>Motorista</th>
         </tr>
       </thead>
       <tbody id="abastecimentos-body">
@@ -34,11 +37,14 @@
         const tbody = document.getElementById("abastecimentos-body");
         abastecimentos.forEach(item => {
           const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${new Date(item.data).toLocaleDateString()}</td>
-            <td>${item.veiculo?.placa ?? 'Indefinido'}</td>
+          row.innerHTML =  `
+            <td>${item.data}</td>
+            <td>${item.veiculo ? item.veiculo.placa : item.placa || '-'}</td>
+            <td>${item.veiculo ? item.veiculo.modelo : '-'}</td>
+            <td>${item.valor || '-'}</td>
             <td>${item.litros}</td>
-            <td>${item.km}</td>
+            <td>${item.km || '-'}</td>
+            <td>${item.motorista ? item.motorista.nome : '-'}</td>
           `;
           tbody.appendChild(row);
         });
@@ -46,7 +52,10 @@
       .catch(err => {
         console.error("Erro ao carregar abastecimentos:", err);
       });
+
+    if (!localStorage.getItem('token')) {
+      window.location.href = 'login.html';
+    }
   </script>
-  
 </body>
 </html>
